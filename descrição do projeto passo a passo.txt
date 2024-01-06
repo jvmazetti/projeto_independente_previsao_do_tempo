@@ -1,0 +1,168 @@
+//ESTRUTURA HTML:
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com"> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2? display=swap" rel="stylesheet"> 
+    <title>Previsão do Tempo</title>
+</head>
+<body>
+    <div class="container">
+        <input class="nome-cidade" type="text" placeholder="Digite o nome da cidade..."/>
+        <button class="botao-buscar"><img class="img-buscar" alt="busca" src="https://www.svgrepo.com/show/488200/find.svg"/></button>
+
+        <div class="conteudo-previsao">
+            <h2 class="cidade">Cidade</h2>
+
+            <p class="temperatura">0°C</p>
+
+            <div class="clima">
+                <img class="img-previsao" alt="ícone-do-clima"/>
+                <p class="texto-previsao">Clima</p>
+            </div>
+
+            <p class="umidade">Umidade</p>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+//ESTILIZAÇÃO DA PÁGINA:
+
+
+
+-> estilização geral da página:
+
+*{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+-> estilizando o fundo da página:
+
+body{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("https://source.unsplash.com/1600x900/?landscape");
+}
+
+-> estilizando o fundo do conteúdo da página:
+
+.container{
+    background-color: #000;
+    border-radius: 25px;
+    padding: 20px;
+    width:95%;
+    max-width: 450px;
+}
+
+-> estilizando o formulário input da página:
+
+.nome-cidade{
+    border:none;
+    outline: none;
+    padding: 10px;
+    border-radius: 25px;
+    font-size: 20px;
+    background-color: #7c7c7c2b;
+    color:#fff;
+    width: calc(100% - 50px);
+}
+
+.botao-buscar{
+    border:none;
+    outline: none;
+    padding: 10px;
+    border-radius: 50px;
+    background-color: #7c7c7c2b;
+    cursor: pointer;
+    float:right;
+}
+
+.img-buscar{
+    width:20px;
+}
+
+
+-> estilizando o conteúdo da previsão:
+
+.conteudo-previsao{
+    margin-top: 30px;
+}
+
+.cidade{
+    color:#fff;
+    font-size: 28px;
+    font-weight: 300;
+}
+
+.temperatura, .temperatura-max, .temperatura-min{
+    font-size: 20px;
+    color:#fff;
+    margin-top: 20px;
+}
+
+.clima{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.texto-previsao {
+    color:#fff;
+    margin-left: 20px;
+}
+
+.umidade{
+    color:#fff;
+    margin-top:20px;
+}
+
+
+
+//SCRIPTS:
+
+-> armazenar a chave de identificação do servidor:
+	const key = "f844972e8ec78816fc5b464add77e7b2"
+
+-> armazenar o botão e criar um evento para ser disparado assim que ele for clicado:
+	const botao = document.querySelector('.botao-buscar')
+	botao.addEventListener('click', cliqueiNoBotao)
+
+-> pegar a informação digitada no input:
+	function cliqueiNoBotao(){
+    		const cidade = document.querySelector('.nome-cidade').value
+    		buscarCidade(cidade)
+	}
+
+-> acessar a api do servidor a partir da informação do input e pegar as informações referente a cidade:
+	async function buscarCidade(cidade){
+    		const dados = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cidade}&appid=								${key}&lang=pt_br&units=metric`).then( resposta => resposta.json())
+    		colocarDadosNaTela(dados)
+	}
+
+
+->colocar esses dados na tela:
+
+
+	function colocarDadosNaTela(dados){
+    		document.querySelector('.cidade').innerHTML = "Tempo em" + ' ' + dados.name
+    		document.querySelector('.temperatura-max').innerHTML = "Máxima:" + ' ' + Math.floor(dados.main.temp_max) + "°C"
+    		document.querySelector('.temperatura').innerHTML = Math.floor(dados.main.temp) + "°C"
+    		document.querySelector('.temperatura-min').innerHTML = "Mínima:" + ' ' + Math.floor(dados.main.temp_min) + "°C"
+    		document.querySelector('.texto-previsao').innerHTML = dados.weather[0].description
+    		document.querySelector('.umidade').innerHTML = "Umidade:" + ' ' + dados.main.humidity + "%"
+    		document.querySelector('.img-previsao').src = `https://openweathermap.org/img/wn/${dados.weather[0].icon}.png`
+	}
